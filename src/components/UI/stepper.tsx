@@ -55,9 +55,9 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
       "w-24" // reduced width
     )}>
       <div className={cn(
-        "flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ]",
-        status === 'completed' && "bg-[#313475] border-[#313475] text-white",
-        status === 'active' && "bg-[#313475] border-[#313475] text-white shadow",
+        "flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200",
+        status === 'completed' && "bg-[#313475] border-gray-400 text-white",
+        status === 'active' && "bg-[#313475] border-gray-400 text-white shadow",
         status === 'pending' && "bg-white border-gray-400 text-gray-500"
       )}>
         {status === 'completed' ? (
@@ -71,12 +71,12 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
         <p
           title={step.title}
           className={cn(
-            "text-xs font-medium leading-tight w-full dark:text-white",
+            "text-xs font-medium leading-tight w-full",
             status === 'active'
-              ? "text-[#313475] whitespace-normal"
+              ? "text-[#313475] dark:text-white whitespace-normal"
               : "truncate text-ellipsis overflow-hidden",
-            status === 'completed' && "text-gray-800",
-            status === 'pending' && "text-gray-500"
+            status === 'completed' && "text-gray-800 dark:text-white",
+            status === 'pending' && "text-gray-500 dark:text-white"
           )}
         >
           {step.title}

@@ -81,7 +81,7 @@ export const JobExperienceForm: React.FC<InlineExperienceFormProps> = ({
             Add Work Experience
           </h3>
         </div>
-
+        <p className="text-sm text-gray-500 mb-4">Add any work experience you have.</p> 
         <div className="space-y-6">
           {fields.map((field, index) => (
             <div

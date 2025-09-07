@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, FormProvider, FieldPath, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Steps } from "antd";
+import { useNavigate } from "react-router-dom";
 import { steppers } from "../config/stepper";
 import FormInput, { MobileNumberInput } from "../components/Form/FormInput";
 import InlineEducationForm from "../components/InlineEducationForm";
@@ -20,7 +21,8 @@ import {
   educationDetailsSchema,
   jobExperienceDetailsSchema,
   employmentDetailsSchema,
-  createChildSchema
+  createChildSchema,
+  uploadFormSchema
 } from "../schemas/schemas";
 import { Stepper } from "../components/UI/stepper";
 import { InlineChildrenForm } from "../components/InlineChildrenForm";
@@ -46,7 +48,8 @@ const createCombinedSchema = (isChildrenFormVisible: boolean = false) => {
     .concat(qualificationLegalDetailsSchema)
     .concat(educationDetailsSchema)
     .concat(jobExperienceDetailsSchema)
-    .concat(employmentDetailsSchema);
+    .concat(employmentDetailsSchema)
+    .concat(uploadFormSchema);
 
   if (isChildrenFormVisible) {
     return baseSchema.shape({
@@ -59,6 +62,7 @@ const createCombinedSchema = (isChildrenFormVisible: boolean = false) => {
 };
 
 export default function StepperForm() {
+  const navigate = useNavigate();
   const initialFormData = loadFormDataFromCookie();
   const initialStep = loadCurrentStepFromCookie();
 
@@ -105,12 +109,60 @@ export default function StepperForm() {
   }, [currentStep]);
 
   useEffect(() => {
+    let debounceTimer: NodeJS.Timeout;
+  
     const subscription = methods.watch((formData) => {
-      saveFormDataToCookie(formData);
+      // Debounce cookie saving
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        saveFormDataToCookie(formData);
+      }, 300);
+  
+      // Live mirror: currentAddress → permanentAddress only if different
+      const currentAddress = formData?.currentAddress || "";
+      const permanentAddress = methods.getValues("permanentAddress") || "";
+      if (
+        formData?.sameAsCurrentAddress &&
+        currentAddress !== permanentAddress
+      ) {
+        methods.setValue("permanentAddress", currentAddress, {
+          shouldValidate: false,
+          shouldDirty: true,
+        });
+      }
+  
+      // Auto-calculate experienceMonths
+      if (formData?.experienceFromDate && formData?.experienceToDate) {
+        const fromDate = new Date(formData.experienceFromDate);
+        const toDate = new Date(formData.experienceToDate);
+  
+        if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime()) && toDate > fromDate) {
+          const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
+          const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+          const years = Math.floor(diffMonths / 12);
+          const months = diffMonths % 12;
+  
+          let experienceText = "";
+          if (years > 0) experienceText += `${years} year${years > 1 ? "s" : ""}`;
+          if (months > 0) experienceText += `${experienceText ? " " : ""}${months} month${months > 1 ? "s" : ""}`;
+  
+          const existingExp = methods.getValues("experienceMonths");
+          if (experienceText && experienceText !== existingExp) {
+            methods.setValue("experienceMonths", experienceText, {
+              shouldValidate: false,
+              shouldDirty: true,
+            });
+          }
+        }
+      }
     });
-    
-    return () => subscription.unsubscribe();
-  }, [methods]);
+  
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(debounceTimer);
+    };
+  }, []);
+  
 
   useEffect(() => {
     const savedData = loadFormDataFromCookie();
@@ -146,10 +198,19 @@ export default function StepperForm() {
     methods.clearErrors();
   }, [isChildrenFormVisible, methods]);
 
+  // Keep permanentAddress in sync with currentAddress when 'Save as Permanent' is checked
+  const sameAsCurrent = useWatch({ control: methods.control, name: "sameAsCurrentAddress" });
+  const currentAddressValue = useWatch({ control: methods.control, name: "currentAddress" });
+  useEffect(() => {
+    if (sameAsCurrent) {
+      methods.setValue("permanentAddress", currentAddressValue || "", { shouldValidate: true, shouldDirty: true });
+    }
+  }, [sameAsCurrent, currentAddressValue, methods]);
+
   const nextStep = async () => {
     const currentStepFields = steppers[currentStep]?.fields?.map(field => field.name);
     let fieldsToValidate = [...currentStepFields];
-    if (currentStep === 1 && isChildrenFormVisible && maritalStatus !== "single") {
+    if (currentStep === 1 && maritalStatus !== "single") {
       fieldsToValidate.push('children');
     }
 
@@ -159,7 +220,9 @@ export default function StepperForm() {
       fieldsToValidate.push('educationList');
     }
     
-    if (currentStep === 5) {
+    // Handle country-state-city field validation for Contact Details step
+    const contactDetailsStepIndex = steppers.findIndex(s => s.stepName === "Contact Details");
+    if (currentStep === contactDetailsStepIndex) {
       fieldsToValidate = fieldsToValidate.filter(field => field !== 'country-state-city');
       fieldsToValidate.push('country', 'state', 'city');
     }
@@ -187,6 +250,7 @@ export default function StepperForm() {
   };
 
   const onSubmit = (data: any) => {
+    console.log("Form submitted successfully!");
     console.log("Form Data:", data);
     
     // Get all cookie data and filter out upload fields
@@ -201,6 +265,14 @@ export default function StepperForm() {
     
     console.log("All Cookie Values (excluding upload data):", filteredData);
     clearFormCookies();
+    
+    // Navigate to thank you page
+    console.log("Navigating to thank you page...");
+    navigate('/thank-you');
+  };
+
+  const onError = (errors: any) => {
+    console.log("Form validation errors:", errors);
   };
 
   const handleChildrenChange = (newChildren: any[]) => {
@@ -250,14 +322,14 @@ export default function StepperForm() {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="py-8">
+      <form onSubmit={methods.handleSubmit(onSubmit, onError)} className="py-8">
         {/* Stepper Header */}
         {/* Current Step Fields */}
 
         <Stepper steps={steps} currentStep={currentStep} className="px-5 lg:px-10"/>
 
         <div className="flex justify-center items-center mt-10 mb-3">
-          <h2 className="text-2xl font-semibold text-[#313475] mb-6">
+          <h2 className="font-semibold text-[#313475] mb-6 lg:text-2xl dark:text-white">
             {steppers[currentStep].stepName}
           </h2>
         </div>
@@ -270,7 +342,11 @@ export default function StepperForm() {
                 <h1 className="text-xl font-bold text-[#313475] mb-4">Work Experience</h1>
               )
           }
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
+          <div className={`grid gap-5 ${
+            currentStep === steppers.findIndex(s => s.stepName === "Attachments") 
+              ? "grid-cols-1" 
+              : "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+          }`}>
             {(steppers[currentStep]?.fields?.map((field) => {
                   // Disable permanentAddress input when sameAsCurrentAddress is checked
                   const sameAs = methods.watch("sameAsCurrentAddress");
@@ -285,9 +361,12 @@ export default function StepperForm() {
                     case "email":
                       const isCurrentAddr = field.name === 'currentAddress';
                       const labelNode = isCurrentAddr ? (
-                        <div className="flex items-center justify-between">
-                          <span>{field.label}</span>
-                          <label className="flex items-center gap-2 text-sm font-normal">
+                        <div className="flex items-center justify-between w-full">
+                          <span className="flex items-center gap-1">
+                            {field.label}
+                            {field.required && <span className="text-red-500">*</span>}
+                          </span>
+                          <label className="flex items-center gap-2 text-sm font-normal text-gray-600">
                             <input
                               type="checkbox"
                               checked={!!sameAs}
@@ -299,6 +378,7 @@ export default function StepperForm() {
                                   methods.setValue('permanentAddress', current, { shouldValidate: true });
                                 }
                               }}
+                              className="rounded border-gray-300 text-[#313475] focus:ring-[#313475]"
                             />
                             <span>Save as Permanent</span>
                           </label>
@@ -313,7 +393,7 @@ export default function StepperForm() {
                           type={field.type}
                           label={labelNode as any}
                           placeholder={field.placeholder}
-                          required={field.required}
+                          required={field.name === 'currentAddress' ? false : field.required}
                           disabled={field.readOnly || (field.name === 'permanentAddress' && sameAs)}
                           maxLength={field.maxLength}
                           alphaOnly={field.alphaOnly}
@@ -417,16 +497,17 @@ export default function StepperForm() {
                           required={field.required}
                         />
                       );
-                    case "toggle":
-                      return (
-                        <FormToggle<any>
-                          name={field.name}
-                          control={control}
-                          label={field.label}
-                          checkedChildren="Yes"
-                          unCheckedChildren="No"
-                        />
-                      );
+                      case "toggle":
+                        return (
+                          <FormToggle<any>
+                            key={field.name}
+                            name={field.name}
+                            control={control}
+                            label={field.label}
+                            checkedChildren="Yes"
+                            unCheckedChildren="No"
+                          />
+                        );
                     default:
                       return null;
                   }
@@ -516,54 +597,53 @@ export default function StepperForm() {
         )}
 
         {/* Step Navigation Buttons - Fixed at bottom */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-white/50 dark:bg-black/50 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 p-4 z-50 shadow-lg">
           <div className="flex justify-between max-w-7xl mx-auto px-5 lg:px-20">
             <div className="flex-1">
               {currentStep > 0 && (
-                <Button onClick={prevStep} className="mr-2">
-                  <span className="mr-1">&lt;</span>
-                  Previous
-                </Button>
-              )}
-            </div>
-            
-            <div className="flex-1 flex justify-center">
-              {maritalStatus !== "single" && currentStep === 1 && !isChildrenFormVisible && (
-                <Button
-                  type="primary"
-                  size="large"
-                  onClick={handleAddChildrenClick}
+                <button 
+                  onClick={prevStep} 
+                  className="mr-2 h-12 px-6 text-[#313475] border-4 border-[#313475] hover:bg-[#313475] hover:text-white hover:border-[#313475] transition-all duration-200 font-medium rounded-xl bg-white"
                 >
-                  + Add Children
-                </Button>
+                  <span className="mr-2 text-lg">&lt;</span>
+                  Previous
+                </button>
               )}
             </div>
             
             <div className="flex-1 flex justify-end">
               {currentStep < steppers.length - 1 && (
-                <Button type="primary" onClick={() => nextStep()} size="sm">
+                <button 
+                  onClick={() => nextStep()} 
+                  className="h-12 px-8 bg-[#313475] hover:bg-white hover:text-[#313475] border-4 border-white hover:border-[#313475] transition-all duration-200 font-medium shadow-md hover:shadow-lg rounded-xl text-white"
+                >
                   Next
-                  <span className="ml-1">&gt;</span>
-                </Button>
+                  <span className="ml-2 text-lg">&gt;</span>
+                </button>
               )}
               {currentStep === steppers.length - 1 && (
-                <Button type="primary" htmlType="submit">
-                  Submit
-                </Button>
+                <button 
+                  type="submit"
+                  className="h-12 px-8 bg-[#313475] hover:bg-white hover:text-[#313475] border-4 border-white hover:border-[#313475] transition-all duration-200 font-medium shadow-md hover:shadow-lg rounded-xl text-white"
+                >
+                  Submit Application
+                </button>
               )}
             </div>
           </div>
         </div>
         
         {/* Step Navigation Buttons */}
-        <div className="flex justify-between mt-8 px-5 lg:px-20">
+        <div className="flex justify-between mt-4 px-5 lg:px-20">
           {maritalStatus !== "single" && currentStep === 1 && !isChildrenFormVisible && (
             <Button
-              type = "primary"
+              type="primary"
               size="large"
               onClick={handleAddChildrenClick}
+              className="h-12 px-8 bg-[#313475] hover:bg-[#252a5a] border-4 border-orange-500 hover:border-[#252a5a] transition-all duration-200 font-medium shadow-md hover:shadow-lg rounded-none"
             >
-              + Add Children
+              <span className="mr-2 text-lg">+</span>
+              Add Children
             </Button>
           )}
         </div>

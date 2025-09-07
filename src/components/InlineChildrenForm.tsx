@@ -37,7 +37,7 @@ export const InlineChildrenForm: React.FC<InlineChildrenFormProps> = ({
     append({
       relationship: "",
       name: "",
-      age: 0,
+      age: undefined, // Don't set to 0, let it be undefined initially
       mobile: "",
     });
   };
@@ -133,6 +133,7 @@ export const InlineChildrenForm: React.FC<InlineChildrenFormProps> = ({
                   control={control}
                   label="Mobile"
                   placeholder="Enter Mobile Number"
+                  required={false}
                 />
               </div>
             </div>

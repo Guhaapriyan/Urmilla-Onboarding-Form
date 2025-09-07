@@ -17,7 +17,7 @@ export const steppers = [
         ],
     },
     {
-        stepName: "Employee Family & Background",
+        stepName: "Employee Background Information",
         fields: [
             { name: "maritalStatus", label: "Marital Status", type: "select", placeholder: "Select Marital Status", options: maritalOptions, required: true },
             { name: "religion", label: "Religion", type: "select", placeholder: "Select Religion", options: religionOptions, required: true },
@@ -30,7 +30,7 @@ export const steppers = [
         ],
     },
     {
-        stepName: "Employee Family Details",
+        stepName: "Employee Family Information",
         fields: [
             { name: "fathersName", label: "Father's Name", type: "text", placeholder: "Enter Father's Name", required: true, maxLength: 30, alphaOnly: true },
             { name: "fathersAge", label: "Father's Age", type: "number", placeholder: "Enter Father's Age", required: true, maxLength: 3 },
@@ -46,7 +46,7 @@ export const steppers = [
         stepName: "Employment Details",
         fields: [
             { name: "postAppliedFor", label: "Post Applied For", type: "select", placeholder: "Select Post Applied For", options: postAppliedForOptions },
-            { name: "employeeAccountNo", label: "Employee Account No", type: "number", placeholder: "Enter Bank Account Number", maxLenght: 20},
+            { name: "employeeAccountNo", label: "Employee Account No", type: "text", placeholder: "Enter Bank Account Number", maxLength: 20},
             { name: "proposedJoinDate", label: "Proposed Join Date", type: "date", placeholder: "Select Proposed Join Date" },
             { name: "joiningDate", label: "Joining Date", type: "date", placeholder: "Select Joining Date" },
         ],
@@ -113,20 +113,20 @@ export const steppers = [
             { name: "isInsideCompany", label: "Is Inside Company", type: "toggle", required: false },
         ],
         fields2: [
-            { name: "name", label: "Name", type: "text", placeholder: "Name", maxLength: 30, alphaOnly: true },
-            { name: "designation", label: "Designation", type: "text", placeholder: "Enter Designation", maxLength: 30, alphaOnly: true },
-            { name: "contactNumber", label: "Contact Number", type: "tel", placeholder: "Enter Contact Number" },
-            { name: "referenceEmail", label: "Reference Email", type: "email", placeholder: "Enter Email" },
+            { name: "name", label: "Name", type: "text", placeholder: "Name", maxLength: 30, alphaOnly: true, required: false },
+            { name: "designation", label: "Designation", type: "text", placeholder: "Enter Designation", maxLength: 30, alphaOnly: true, required: false },
+            { name: "contactNumber", label: "Contact Number", type: "tel", placeholder: "Enter Contact Number", required: false },
+            { name: "referenceEmail", label: "Reference Email", type: "email", placeholder: "Enter Email", required: false },
         ]
     },
     {
         stepName: "Attachments",
         fields: [
             { name: "aadhaarFile", label: "Upload Aadhaar", type: "file", accept: ".pdf", note: "PDF up to 5MB.", required: true },
-            { name: "panCardFile", label: "Upload PAN Card", type: "file", accept: ".pdf", note: "PDF up to 5MB." },
-            { name: "degreeFile", label: "Upload Degree", type: "file", accept: ".pdf", note: "PDF up to 5MB." },
-            { name: "drivingLicenseFile", label: "Upload Driving Licence", type: "file", accept: ".pdf", note: "PDF up to 5MB." },
-            { name: "profileImage", label: "Profile image", type: "file", accept: ".png,.jpg,.jpeg", note: "PNG/JPG up to 5MB." },
+            { name: "panCardFile", label: "Upload PAN Card", type: "file", accept: ".pdf", note: "PDF up to 5MB.", required: true },
+            { name: "degreeFile", label: "Upload Degree", type: "file", accept: ".pdf", note: "PDF up to 5MB.", required: true },
+            { name: "drivingLicenseFile", label: "Upload Driving Licence", type: "file", accept: ".pdf", note: "PDF up to 5MB.", required: true },
+            { name: "profileImage", label: "Profile image", type: "file", accept: ".png,.jpg,.jpeg", note: "PNG/JPG up to 5MB.", required: true },
         ],
     }
 ]

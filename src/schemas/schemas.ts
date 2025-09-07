@@ -35,12 +35,10 @@ export const employeePersonalInformationSchema = yup.object({
   physicallyChallenged: yup.string().required("This field is required"),
 });
 export const createChildSchema = (isRequired: boolean = false) => yup.object({
-    relationship: isRequired ? yup.string().required("Relationship is required"): yup.string().optional(),
-    name: isRequired ? nameValidation: yup.string().optional(),
-    age: isRequired 
-        ? ageValidation
-        : ageValidation.optional(),
-    mobile: phoneValidation,
+    relationship: yup.string().optional(),
+    name: yup.string().optional(),
+    age: ageValidation.optional(),
+    mobile: phoneValidation.optional(),
 });
 
 // Default child schema (optional)
@@ -257,7 +255,10 @@ export const jobExperienceDetailsSchema = yup.object({
 
 export const employmentDetailsSchema = yup.object({
     postAppliedFor: yup.string().optional(),
-    employeeAccountNo: yup.string().optional(),
+    employeeAccountNo: yup.string()
+        .optional()
+        .matches(/^\d+$/, "Account number must contain only digits")
+        .max(20, "Account number must be at most 20 digits"),
     proposedJoinDate: yup.string()
         .optional()
         .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
@@ -275,63 +276,63 @@ const isValidFile = (file: any) => {
 };
 
 export const uploadFormSchema = yup.object().shape({
-  aadhaar: yup
+  aadhaarFile: yup
     .mixed()
     .required('Aadhaar is required')
-    .test('fileSize', 'File too large', (file) => {
+    .test('fileSize', 'File too large', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.size <= maxSize;
+      return !file || actualFile?.size <= maxSize;
     })
-    .test('fileType', 'Only PDF allowed', (file) => {
+    .test('fileType', 'Only PDF allowed', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.type === 'application/pdf';
+      return !file || actualFile?.type === 'application/pdf';
     }),
 
-  pan: yup
+  panCardFile: yup
     .mixed()
     .required('PAN Card is required')
-    .test('fileSize', 'File too large', (file) => {
+    .test('fileSize', 'File too large', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.size <= maxSize;
+      return !file || actualFile?.size <= maxSize;
     })
-    .test('fileType', 'Only PDF allowed', (file) => {
+    .test('fileType', 'Only PDF allowed', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.type === 'application/pdf';
+      return !file || actualFile?.type === 'application/pdf';
     }),
 
-  degree: yup
+  degreeFile: yup
     .mixed()
     .required('Degree is required')
-    .test('fileSize', 'File too large', (file) => {
+    .test('fileSize', 'File too large', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.size <= maxSize;
+      return !file || actualFile?.size <= maxSize;
     })
-    .test('fileType', 'Only PDF allowed', (file) => {
+    .test('fileType', 'Only PDF allowed', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.type === 'application/pdf';
+      return !file || actualFile?.type === 'application/pdf';
     }),
 
-  drivingLicence: yup
+  drivingLicenseFile: yup
     .mixed()
     .required('Driving Licence is required')
-    .test('fileSize', 'File too large', (file) => {
+    .test('fileSize', 'File too large', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.size <= maxSize;
+      return !file || actualFile?.size <= maxSize;
     })
-    .test('fileType', 'Only PDF allowed', (file) => {
+    .test('fileType', 'Only PDF allowed', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.type === 'application/pdf';
+      return !file || actualFile?.type === 'application/pdf';
     }),
 
   profileImage: yup
     .mixed()
     .required('Profile Image is required')
-    .test('fileSize', 'File too large', (file) => {
+    .test('fileSize', 'File too large', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || actualFile.size <= maxSize;
+      return !file || actualFile?.size <= maxSize;
     })
-    .test('fileType', 'Only PNG or JPG allowed', (file) => {
+    .test('fileType', 'Only PNG or JPG allowed', (file: any) => {
       const actualFile = file?.originFileObj || file;
-      return !file || ['image/jpeg', 'image/png'].includes(actualFile.type);
+      return !file || ['image/jpeg', 'image/png'].includes(actualFile?.type);
     }),
 });

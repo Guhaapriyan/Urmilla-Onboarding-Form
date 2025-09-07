@@ -1,7 +1,8 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  font-family: "Yu Gothic UI", sans-serif;
+  font-family: "Inter", "Yu Gothic UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
@@ -54,6 +55,8 @@ a:hover {
 .ant-picker:focus,
 .ant-picker:hover {
   border-color: #313475 !important;
+  border-width: 2px !important; /* match other inputs */
+  box-shadow: none !important;  /* remove default AntD focus shadow */
 }
 .ant-input-number-input {
   height: 48px !important;
@@ -80,8 +83,28 @@ a:hover {
   border-color: rgb(197, 197, 197);
 }
 
+.ant-input:focus, .ant-input:focused, .ant-input:focus-visible,
+.ant-picker:focus, .ant-picker:focused, .ant-picker:focus-visible,
+.ant-select-selector:focus,.ant-select-selector:focus-visible, .ant-select-selector:focused,
+.ant-input-number-input-wrap:focus,.ant-input-number-input-wrap:focus-visible, .ant-input-number-input-wrap:focused 
+.number-field:focus,.number-field:focused,.number-field:focus-visible, 
+.custom-input-tel:focus,.custom-input-tel:focused,.custom-input-tel:focus-visible
+{
+  border-color: #313475;
+}
+
+.number-field-input {
+  padding-bottom: 10px !important;
+}
+
+/* Ensure padding-bottom applies to AntD number input content */
+.number-field-input .ant-input-number-input-wrap input.ant-input-number-input {
+  padding-bottom: 5px !important;
+}
+
 .tel-field{
   border : 2px solid rgb(197, 197, 197) !important;
+  padding-bottom: 5px !important;
 }
 
 .tel-field:focus,
@@ -90,4 +113,32 @@ a:hover {
 .tel-field-focused
 {
   border : 2px solid #313475 !important;
+}
+
+/* Hide scrollbars for textarea */
+.ant-input[data-textarea]::-webkit-scrollbar {
+  display: none;
+}
+
+.ant-input[data-textarea] {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Dark mode styles for Select components */
+.dark .ant-select-selector {
+  background-color: white !important;
+  color: black !important;
+}
+
+.dark .ant-select-selection-item {
+  color: black !important;
+}
+
+.dark .ant-select-selection-placeholder {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+
+.dark .ant-select-arrow {
+  color: #313475 !important;
 }

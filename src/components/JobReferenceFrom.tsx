@@ -107,6 +107,7 @@ export const JobReferenceForm: React.FC<InlineExperienceFormProps> = ({
             Add Work Reference
           </h3>
         </div>
+        <p className="text-sm text-gray-500 mb-4">Add any work references you have.</p> 
 
         <div className="space-y-6">
           {fields.map((field, index) => (

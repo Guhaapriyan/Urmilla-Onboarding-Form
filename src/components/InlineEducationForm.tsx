@@ -30,9 +30,9 @@ const InlineEducationForm: React.FC<InlineEducationFormProps> = ({ control }) =>
     <div className="mt-8 px-5 lg:px-20">
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold text-[#313475]">Education</h3>
+          <h3 className="text-xl font-semibold text-[#313475]">Additional Education</h3>
         </div>
-
+        <p className="text-sm text-gray-500 mb-4">Add any additional education you have completed.</p> 
         {fields.map((field, index) => (
           <div key={field.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4">
             <div className="flex justify-between items-center mb-4">

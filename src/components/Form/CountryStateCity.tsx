@@ -90,7 +90,7 @@ export const CountryStateCity: React.FC<CountryStateCityProps> = ({
         control={control}
         render={({ field, fieldState: { error } }) => (
           <div className="w-full">
-            <label className="block text-sm sm:text-base font-medium text-black mb-2 after:content-['*'] after:text-red-500 after:ml-1">
+            <label className="block text-sm sm:text-base font-medium text-black dark:text-white mb-2 after:content-['*'] after:text-red-500 after:ml-1">
               Country
             </label>
             <Select
@@ -125,7 +125,7 @@ export const CountryStateCity: React.FC<CountryStateCityProps> = ({
         control={control}
         render={({ field, fieldState: { error } }) => (
           <div className="w-full">
-            <label className="block text-sm sm:text-base font-medium text-black mb-2 after:content-['*'] after:text-red-500 after:ml-1">
+            <label className="block text-sm sm:text-base font-medium text-black dark:text-white mb-2 after:content-['*'] after:text-red-500 after:ml-1">
               State
             </label>
             <Select
@@ -161,7 +161,7 @@ export const CountryStateCity: React.FC<CountryStateCityProps> = ({
         control={control}
         render={({ field, fieldState: { error } }) => (
           <div className="w-full">
-            <label className="block text-sm sm:text-base font-medium text-black mb-2 after:content-['*'] after:text-red-500 after:ml-1">
+            <label className="block text-sm sm:text-base font-medium text-black dark:text-white mb-2 after:content-['*'] after:text-red-500 after:ml-1">
               City
             </label>
             <Select

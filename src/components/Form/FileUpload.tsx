@@ -21,6 +21,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
   note,
   accept,
   control,
+  required = false,
 }) => {
   return (
     <Controller
@@ -58,7 +59,10 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
             }}
           >
             <div>
-              <Text strong>{label}</Text>
+              <Text strong>
+                {label}
+                {required && <span style={{ color: 'red', marginLeft: 4 }}>*</span>}
+              </Text>
               <br />
               <Text type="secondary" style={{ fontSize: 12 }}>
                 {note}

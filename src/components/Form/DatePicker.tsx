@@ -94,16 +94,18 @@ export const FormDatePicker = <T extends FieldValues>({
                   variant="outline"
                   className={clsx(
                     "w-full justify-start text-left font-normal h-12",
-                    "border-[#c5c5c5] hover:border-[#313475] focus:border-[#313475] bg-white text-black",
+                    "border-2 border-[#c5c5c5] hover:border-[#313475] focus:border-[#313475] bg-white text-black",
                     "transition-all duration-200",
-                    !value && "text-muted-foreground",
+                    !value && "text-gray-500",
                     error && "border-red-500 focus:border-red-500"
                   )}
                   disabled={disabled}
                   onBlur={onBlur}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4 text-gray-600" />
-                  {value ? dayjs(value).format(getDateFormat()) : placeholder}
+                  <span className={!value ? "text-gray-400" : "text-black"}>
+                    {value ? dayjs(value).format(getDateFormat()) : placeholder}
+                  </span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-white text-black shadow-md border border-gray-300" align="start">
@@ -112,7 +114,6 @@ export const FormDatePicker = <T extends FieldValues>({
                   selected={value ? new Date(value) : undefined}
                   onSelect={handleDateSelect}
                   disabled={disabledDate}
-                  initialFocus
                   className="rounded-md border border-gray-200 bg-white"
                 />
               </PopoverContent>
@@ -168,7 +169,7 @@ export const YearPicker = <T extends FieldValues>({
             onBlur={onBlur}
             disabled={disabled}
             className={clsx(
-              "w-full px-3 py-2 border h-12 border-gray-300 rounded-lg transition-all duration-200",
+              "w-full px-3 py-2 border-2 h-12 border-[#c5c5c5] rounded-lg transition-all duration-200",
               "hover:border-[#313475] focus:border-[#313475] focus:outline-none",
               "text-sm sm:text-base",
               size === "small" && "py-1.5 text-sm",
@@ -178,7 +179,7 @@ export const YearPicker = <T extends FieldValues>({
             )}
             style={{ fontSize: "clamp(14px, 2.5vw, 16px)" }}
           >
-            <option value="" disabled>
+            <option value="" disabled className="text-gray-500">
               {placeholder}
             </option>
             {years.map((year) => (

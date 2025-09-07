@@ -30,6 +30,7 @@ export const FormInput = <T extends FieldValues>({
         fieldState: { error },
       }) => {
         const [localValue, setLocalValue] = useState(value || "");
+        const [isHovered, setIsHovered] = useState(false);
         const debouncedOnChange = useDebouncedCallback(onChange, 2000);
 
         // Update local value when form value changes (e.g., from external sources)
@@ -50,6 +51,11 @@ export const FormInput = <T extends FieldValues>({
           // If alphaOnly is true, only allow alphabetic characters (letters and spaces)
           if (alphaOnly) {
             value = value.replace(/[^a-zA-Z\s]/g, '');
+          }
+          
+          // For account number field, only allow numeric characters
+          if (name === "employeeAccountNo") {
+            value = value.replace(/\D/g, '');
           }
           
           handleChange(value);
@@ -78,12 +84,17 @@ export const FormInput = <T extends FieldValues>({
                 status={error ? "error" : undefined}
                 className={clsx(
                   "w-full transition-all duration-200 rounded-lg",
-                  "hover:border-[#313475] focus:border-[#313475] focus:ring-1 focus:ring-[#313475]",
+                  // "hover:border-[#313475] focus:border-[#313475] focus:ring-1 focus:ring-[#313475]",
                   error &&
                     "border-red-500 focus:border-red-500 focus:ring-red-500"
                 )}
-                style={{ fontSize: "clamp(14px, 2.5vw, 16px)" }}
+                style={{ 
+                  fontSize: "clamp(14px, 2.5vw, 16px)",
+                  scrollbarWidth: "none", /* Firefox */
+                  msOverflowStyle: "none", /* IE and Edge */
+                }}
                 showCount={!!maxLength}
+                data-textarea="true"
               />
             ) : type === "number" ? (
               <InputNumber
@@ -95,6 +106,8 @@ export const FormInput = <T extends FieldValues>({
                     handleChange(value);
                   }
                 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 onKeyDown={(e) => {
                   // Prevent non-numeric characters from being entered
                   if (!/^[0-9\-+.,\s]*$/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
@@ -106,8 +119,8 @@ export const FormInput = <T extends FieldValues>({
                 status={error ? "error" : undefined}
                 maxLength={maxLength}
                 className={clsx(
-                  "w-full transition-all duration-200 h-12",
-                  "!hover:border-[#313475] focus:!border-[#313475]",
+                  "w-full transition-all duration-200 h-12 number-field-input",
+                  "!hover:border-[#313475] focus:border-[#313475]",
                   error && "border-red-500 focus:border-red-500"
                 )}
                 style={{
@@ -115,7 +128,7 @@ export const FormInput = <T extends FieldValues>({
                   width: "100%",
                   height: "47px",
                   borderWidth: 2,
-                  borderColor: error ? "#ef4444" : "#c5c5c5",
+                  borderColor: error ? "#ef4444" : (isHovered ? "#313475" : "#c5c5c5"),
                   borderRadius: 7,
                   boxShadow: "none",
                 }}
@@ -133,7 +146,7 @@ export const FormInput = <T extends FieldValues>({
                 status={error ? "error" : undefined}
                 className={clsx(
                   "w-full transition-all duration-200 h-12",
-                  "hover:border-[#313475] focus:border-[#313475] rounded-lg",
+                  // "hover:border-[#313475] focus:border-[#313475] rounded-lg",
                   error && "border-red-500 focus:border-red-500"
                 )}
                 style={{ fontSize: "clamp(14px, 2.5vw, 16px)", height: "48px" }}
@@ -198,11 +211,11 @@ export const MobileNumberInput = <T extends FieldValues>({
             </label>
 
             <div
-              className={`h-12 flex rounded-md bg-white border-[#c5c5c5] hover:border-[#313475] focus:border-[#313475] border-2 transition-all duration-200 ${
+              className={`h-12 flex rounded-md bg-white border-[#c5c5c5] hover:border-[#313475] focus:border-[#313475] border-2 transition-all duration-200 !tel-field ${
                 error &&
                 "border-red-400 focus-within:border-red-500 hover:border-red-400 "
               }`}
-              style={{borderRadius : 9}}
+              // style={{borderRadius : 9, paddingBotto}}
             >
               <div
                 className={clsx(
@@ -235,9 +248,9 @@ export const MobileNumberInput = <T extends FieldValues>({
                 disabled={disabled}
                 maxLength={10}
                 status={undefined}
-                bordered={false}
+                variant="borderless"
                 className={clsx(
-                  "flex-1 transition-all duration-200 rounded-r-lg"
+                  "flex-1 transition-all duration-200 rounded-r-lg number-field-input"
                 )}
                 style={{
                   fontSize: "clamp(14px, 2.5vw, 16px)",
