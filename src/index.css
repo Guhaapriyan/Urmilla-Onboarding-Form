@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Yu Gothic UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  /* background-color: #242424; */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Styles */
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+.ant-input,
+.ant-picker,
+.ant-select-selector {
+  border-width: 2px !important;
+  /* border-color: #313475 !important; primary color */
+  /* border-color: rgb(194, 194, 194); */
+  height: 48px !important; /* input height */
+  border-radius: 8px !important; /* consistent border radius */
+  box-shadow: none !important; /* remove shadow */
+}
+.ant-select-selection-item,
+.ant-picker-input > input {
+  height: 100% !important; /* vertically center text */
+  padding: 0 11px; /* adjust padding for text */
+}
+
+.ant-select-selector,
+.ant-picker {
+  height: 48px !important;
+  border-color: rgb(197, 197, 197) !important;
+  display: flex;
+  align-items: center;
+}
+
+.ant-select-selector.ant-select-focused,
+.ant-select-selector:focus,
+.ant-select-selector:hover,
+.ant-picker-focused,
+.ant-picker:focus,
+.ant-picker:hover {
+  border-color: #313475 !important;
+}
+.ant-input-number-input {
+  height: 48px !important;
+  border-width: 3px !important; /* bold border */
+  border-color: grey !important;
+  border-radius: 4px !important; /* consistent border radius */
+  box-shadow: none !important;
+}
+
+.ant-picker-suffix .anticon {
+  color: #313475 !important;
+}
+
+/* Dropdown arrow icon */
+.ant-select-arrow {
+  color: #313475 !important;
+}
+
+.ant-input,
+.ant-picker,
+.ant-select-selector, .ant-input-number-input-wrap, .number-field, .custom-input-tel
+{
+  border-color: rgb(197, 197, 197);
+}
+
+.tel-field{
+  border : 2px solid rgb(197, 197, 197) !important;
+}
+
+.tel-field:focus,
+.tel-field:focus-visible,
+.tel-field:focus-within,
+.tel-field-focused
+{
+  border : 2px solid #313475 !important;
+}
