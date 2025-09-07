@@ -33,7 +33,7 @@ export const FormDropdown = <T extends FieldValues>({
         <div className={clsx("w-full", className)}>
           <label
             className={clsx(
-              "block text-sm sm:text-base font-medium text-black mb-2",
+              "block text-sm sm:text-base font-medium text-black mb-2 dark:text-white",
               required && "after:content-['*'] after:text-red-500 after:ml-1"
             )}
           >

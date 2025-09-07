@@ -16,10 +16,8 @@ interface StepperProps {
 
 export function Stepper({ steps, currentStep, className }: StepperProps) {
   const getMobileSteps = () => {
-    const prev = currentStep > 0 ? currentStep - 1 : null;
     const next = currentStep < steps.length - 1 ? currentStep + 1 : null;
     const visibleSteps = [];
-    if (prev !== null) visibleSteps.push({ ...steps[prev], position: 'prev' });
     visibleSteps.push({ ...steps[currentStep], position: 'current' });
     if (next !== null) visibleSteps.push({ ...steps[next], position: 'next' });
     return visibleSteps;
@@ -52,20 +50,20 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
     isMobile?: boolean;
   }) => (
     <div className={cn(
-      "flex flex-col items-center space-y-2",
+      "flex flex-col items-center space-y-1",
       isMobile && "flex-1",
-      "w-28" // fixed width
+      "w-24" // reduced width
     )}>
       <div className={cn(
-        "flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200",
+        "flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ]",
         status === 'completed' && "bg-[#313475] border-[#313475] text-white",
         status === 'active' && "bg-[#313475] border-[#313475] text-white shadow",
         status === 'pending' && "bg-white border-gray-400 text-gray-500"
       )}>
         {status === 'completed' ? (
-          <Check className="w-5 h-5" />
+          <Check className="w-4 h-4" />
         ) : (
-          <span className="text-sm font-semibold">{step.id}</span>
+          <span className="text-xs font-semibold">{step.id}</span>
         )}
       </div>
 
@@ -73,7 +71,7 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
         <p
           title={step.title}
           className={cn(
-            "text-sm font-medium leading-snug w-full",
+            "text-xs font-medium leading-tight w-full dark:text-white",
             status === 'active'
               ? "text-[#313475] whitespace-normal"
               : "truncate text-ellipsis overflow-hidden",
@@ -98,7 +96,7 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
     <div className={cn("w-full overflow-x-hidden", className)}>
       {/* Progress Bar */}
       <div className="mb-6">
-        <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+        <div className="flex items-center justify-between text-sm text-gray-500 mb-2 dark:text-white">
           <span>Step {currentStep + 1} of {steps.length}</span>
           <span>{Math.round(((currentStep + 1) / steps.length) * 100)}% Complete</span>
         </div>

@@ -215,6 +215,19 @@ export const educationDetailsSchema = yup.object({
         .required("Year of Passing is required"),
 });
 
+// Dynamic education list validation (for InlineEducationForm)
+export const educationListItemSchema = yup.object({
+  qualification: yup.string().required("Qualification is required"),
+  institutionName: yup.string().required("Institution Name is required"),
+  percentage: yup
+    .number()
+    .typeError("Percentage must be a number")
+    .min(0, "Percentage cannot be less than 0")
+    .max(100, "Percentage cannot be more than 100")
+    .required("Percentage is required"),
+  yearOfPassing: yup.string().required("Year of Passing is required"),
+});
+
 export const jobExperienceDetailsSchema = yup.object({
   companyName: yup.string().required("Company Name is required"),
 

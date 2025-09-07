@@ -31,6 +31,11 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
           accept,
           maxCount: 1,
           beforeUpload: (file: File) => {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+              alert('File too large. Max size is 5MB.');
+              return Upload.LIST_IGNORE;
+            }
             field.onChange(file); // Store file in RHF
             return false; // Prevent auto upload
           },

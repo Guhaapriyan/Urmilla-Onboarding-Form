@@ -59,7 +59,7 @@ export const FormInput = <T extends FieldValues>({
           <div className={clsx("w-full", className)}>
             <label
               className={clsx(
-                "block text-sm sm:text-base font-medium text-black mb-2",
+                "block text-sm sm:text-base font-medium text-black dark:text-white mb-2",
                 required && "after:content-['*'] after:text-red-500 after:ml-1"
               )}
             >
@@ -77,7 +77,7 @@ export const FormInput = <T extends FieldValues>({
                 rows={rows}
                 status={error ? "error" : undefined}
                 className={clsx(
-                  "w-full transition-all duration-200 rounded-lg h-12",
+                  "w-full transition-all duration-200 rounded-lg",
                   "hover:border-[#313475] focus:border-[#313475] focus:ring-1 focus:ring-[#313475]",
                   error &&
                     "border-red-500 focus:border-red-500 focus:ring-red-500"
@@ -190,7 +190,7 @@ export const MobileNumberInput = <T extends FieldValues>({
           <div className={clsx("w-full", className)}>
             <label
               className={clsx(
-                "block text-sm sm:text-base font-medium text-gray-700 mb-2",
+                "block text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2",
                 required && "after:content-['*'] after:text-red-500 after:ml-1"
               )}
             >

@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Steps } from "antd";
 import { steppers } from "../config/stepper";
 import FormInput, { MobileNumberInput } from "../components/Form/FormInput";
+import InlineEducationForm from "../components/InlineEducationForm";
 import FormDropdown from "../components/Form/DropDown";
 import FormDatePicker from "../components/Form/DatePicker";
 import { CountryStateCity } from "../components/Form/CountryStateCity";
@@ -142,6 +143,12 @@ export default function StepperForm() {
     if (currentStep === 1 && isChildrenFormVisible && maritalStatus !== "single") {
       fieldsToValidate.push('children');
     }
+
+    // Education Details step: validate dynamic list as well
+    const educationStepIndex = steppers.findIndex(s => s.stepName === "Education Details");
+    if (currentStep === educationStepIndex) {
+      fieldsToValidate.push('educationList');
+    }
     
     if (currentStep === 5) {
       fieldsToValidate = fieldsToValidate.filter(field => field !== 'country-state-city');
@@ -220,11 +227,15 @@ export default function StepperForm() {
           </h2>
         </div>
 
+
         {/* Current Step Fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5 px-5 lg:px-20">
+        <div className="bg-gray-50 border border-gray-300 rounded-lg shadow-sm mx-5 lg:mx-20 p-6 dark:bg-black dark:border-gray-700">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
           {steppers[currentStep]?.fields?.map((field) => {
+            // Disable permanentAddress input when sameAsCurrentAddress is checked
+              const sameAs = methods.watch("sameAsCurrentAddress");
               if (
-                  field.name.startsWith("spouses") &&
+                field.name.startsWith("spouses") &&
                   maritalStatus !== "married"
               ) {
                   return null;
@@ -233,18 +244,47 @@ export default function StepperForm() {
               case "text":
               case "email":
                 return (
-                  <FormInput<any>
-                    key={field.name}
-                    name={field.name}
-                    control={methods.control}
-                    type={field.type}
-                    label={field.label}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    disabled={field.readOnly}
-                    maxLength={field.maxLength}
-                    alphaOnly={field.alphaOnly}
-                  />
+                  (() => {
+                    const sameAs = methods.watch("sameAsCurrentAddress");
+                    const isCurrentAddr = field.name === 'currentAddress';
+                    const labelNode = isCurrentAddr ? (
+                      <div className="flex items-center justify-between">
+                        <span>{field.label}</span>
+                        <label className="flex items-center gap-2 text-sm font-normal">
+                          <input
+                            type="checkbox"
+                            checked={!!sameAs}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              methods.setValue('sameAsCurrentAddress', checked);
+                              if (checked) {
+                                const current = methods.getValues('currentAddress');
+                                methods.setValue('permanentAddress', current, { shouldValidate: true });
+                              }
+                            }}
+                          />
+                          <span>Save as Permanent</span>
+                        </label>
+                      </div>
+                    ) : field.label;
+
+                    return (
+                      <FormInput<any>
+                        key={field.name}
+                        name={field.name}
+                        control={methods.control}
+                        type={field.type}
+                        label={labelNode as any}
+                        placeholder={field.placeholder}
+                        required={field.required}
+                        disabled={field.readOnly || (field.name === 'permanentAddress' && sameAs)}
+                        maxLength={field.maxLength}
+                        alphaOnly={field.alphaOnly}
+                        multiline={field.multiline}
+                        rows={field.rows}
+                      />
+                    );
+                  })()
                 );
               case "number":
                 return (
@@ -256,11 +296,11 @@ export default function StepperForm() {
                     label={field.label}
                     placeholder={field.placeholder}
                     required={field.required}
-                    disabled={field.readOnly}
+                    disabled={field.readOnly || (field.name === 'permanentAddress' && sameAs)}
                     maxLength={field.maxLength}
-                  />
-                );
-
+                    />
+                  );
+                  
               case "tel":
                 return (
                   <MobileNumberInput<any>
@@ -299,10 +339,22 @@ export default function StepperForm() {
                     onCountryChange={setCountryValue}
                     onStateChange={setStateValue}
                     onCityChange={setCityValue}
-                  />
+                    />
+                  );
+                  case "checkbox":
+                    // Skip rendering the standalone checkbox for sameAsCurrentAddress,
+                    // since we render it inline with the Current Address label above
+                    if (field.name === 'sameAsCurrentAddress') {
+                      return null;
+                    }
+                    return (
+                      <label key={field.name} className="flex items-center gap-2 text-sm sm:text-base">
+                    <input type="checkbox" {...methods.register(field.name)} />
+                    {field.label}
+                  </label>
                 );
-              case "date":
-              case "year":
+                case "date":
+                  case "year":
                 // Allow future dates for expiry date fields
                 const isExpiryDate = field.name.toLowerCase().includes('exp') || 
                                    field.name.toLowerCase().includes('expiry') ||
@@ -317,7 +369,6 @@ export default function StepperForm() {
                     variant={field.type === "year" ? "year" : "date"}
                     required={field.required}
                     disableFuture={!isExpiryDate}
-                    maxLength={field.maxLength}
                   />
                 );
               //   case "checkbox":
@@ -346,46 +397,67 @@ export default function StepperForm() {
                 return null;
             }
           })}
+          </div>
         </div>
 
         {/* Inline Children Form */}
         {maritalStatus !== "single" && currentStep === 1 && (
           <InlineChildrenForm
-            control={control}
-            children={children}
-            onChildrenChange={handleChildrenChange}
+          control={control}
+          children={children}
+          onChildrenChange={handleChildrenChange}
             isVisible={isChildrenFormVisible}
             onClose={handleCloseChildrenForm}
           />
         )}
+        
+        {/* Inline Education Form - appears on Education Details step */}
+        {currentStep === steppers.findIndex(s => s.stepName === "Education Details") && (
+          <InlineEducationForm control={control} />
+        )}
 
-        {/* Step Navigation Buttons */}
-        <div className="flex justify-between mt-8 px-5 lg:px-20">
-          {currentStep > 0 && (
-            <Button onClick={prevStep} className="mr-2">
-              Previous
-            </Button>
-          )}
-          {maritalStatus !== "single" && currentStep === 1 && !isChildrenFormVisible && (
-            <Button
-              type = "primary"
-              size="large"
-              onClick={handleAddChildrenClick}
-            >
-              + Add Children
-            </Button>
-          )}
-          {currentStep < steppers.length - 1 && (
-            <Button type="primary" onClick={() => nextStep()}>
-              Next
-            </Button>
-          )}
-          {currentStep === steppers.length - 1 && (
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          )}
+        {/* Step Navigation Buttons - Fixed at bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
+          <div className="flex justify-between max-w-7xl mx-auto px-5 lg:px-20">
+            <div className="flex-1">
+              {currentStep > 0 && (
+                <Button onClick={prevStep} className="mr-2">
+                  <span className="mr-1">&lt;</span>
+                  Previous
+                </Button>
+              )}
+            </div>
+            
+            <div className="flex-1 flex justify-center">
+              {maritalStatus !== "single" && currentStep === 1 && !isChildrenFormVisible && (
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={handleAddChildrenClick}
+                >
+                  + Add Children
+                </Button>
+              )}
+            </div>
+            
+            <div className="flex-1 flex justify-end">
+              {currentStep < steppers.length - 1 && (
+                <Button type="primary" onClick={() => nextStep()}>
+                  Next
+                  <span className="ml-1">&gt;</span>
+                </Button>
+              )}
+              {currentStep === steppers.length - 1 && (
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
+        
+        {/* Add bottom padding to prevent content from being hidden behind fixed buttons */}
+        <div className="h-20"></div>
       </form>
     </FormProvider>
   );
