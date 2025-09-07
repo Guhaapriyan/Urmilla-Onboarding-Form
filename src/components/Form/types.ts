@@ -25,6 +25,7 @@ export interface FormInputProps<T extends FieldValues> extends BaseFormFieldProp
   multiline?: boolean;
   rows?: number;
   autoComplete?: string;
+  alphaOnly?: boolean;
 }
 
 // Dropdown/Select props

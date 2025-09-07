@@ -19,7 +19,8 @@ export const FormInput = <T extends FieldValues>({
   maxLength,
   multiline = false,
   rows = 4,
-}: FormInputProps<T>) => {
+  alphaOnly = false,
+}: FormInputProps<T> & { alphaOnly?: boolean }) => {
   return (
     <Controller<any>
       name={name}
@@ -41,6 +42,17 @@ export const FormInput = <T extends FieldValues>({
           setLocalValue(newValue);
           // Debounce the form state update
           debouncedOnChange(newValue);
+        };
+
+        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          let value = e.target.value;
+          
+          // If alphaOnly is true, only allow alphabetic characters (letters and spaces)
+          if (alphaOnly) {
+            value = value.replace(/[^a-zA-Z\s]/g, '');
+          }
+          
+          handleChange(value);
         };
 
         return (
@@ -77,10 +89,22 @@ export const FormInput = <T extends FieldValues>({
               <InputNumber
                 placeholder={placeholder}
                 value={localValue || undefined}
-                onChange={handleChange}
+                onChange={(value) => {
+                  // Only allow numeric values
+                  if (value === null || value === undefined || !isNaN(Number(value))) {
+                    handleChange(value);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  // Prevent non-numeric characters from being entered
+                  if (!/^[0-9\-+.,\s]*$/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 onBlur={onBlur}
                 disabled={disabled}
                 status={error ? "error" : undefined}
+                maxLength={maxLength}
                 className={clsx(
                   "w-full transition-all duration-200 h-12",
                   "hover:border-[#313475] focus:border-[#313475]",
@@ -91,8 +115,8 @@ export const FormInput = <T extends FieldValues>({
                   width: "100%",
                   height: "47px",
                   borderWidth: 2,
-                  borderColor: "#313475",
-                  borderRadius: 4,
+                  borderColor: error ? "#ef4444" : "#c5c5c5",
+                  borderRadius: 7,
                   boxShadow: "none",
                 }}
                 controls={false}
@@ -102,7 +126,7 @@ export const FormInput = <T extends FieldValues>({
                 type={type}
                 placeholder={placeholder}
                 value={localValue}
-                onChange={(e) => handleChange(e.target.value)}
+                onChange={handleInputChange}
                 onBlur={onBlur}
                 disabled={disabled}
                 maxLength={maxLength}
@@ -174,7 +198,7 @@ export const MobileNumberInput = <T extends FieldValues>({
             </label>
 
             <div
-              className={`h-12 flex rounded-md border-[#313475] hover:border-[#313475] focus:border-[#313475] border-2 transition-all duration-200 ${
+              className={`h-12 flex rounded-md border-[#c5c5c5] hover:border-[#313475] focus:border-[#313475] border-2 transition-all duration-200 ${
                 error &&
                 "border-red-400 focus-within:border-red-500 hover:border-red-400 "
               }`}

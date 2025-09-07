@@ -61,6 +61,7 @@ a:hover {
   border-color: grey !important;
   border-radius: 4px !important; /* consistent border radius */
   box-shadow: none !important;
+  padding: 0 11px !important;
 }
 
 .ant-picker-suffix .anticon {

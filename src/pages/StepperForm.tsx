@@ -172,6 +172,18 @@ export default function StepperForm() {
 
   const onSubmit = (data: any) => {
     console.log("Form Data:", data);
+    
+    // Get all cookie data and filter out upload fields
+    const cookieData = loadFormDataFromCookie();
+    const filteredData = { ...cookieData };
+    
+    // Remove upload-related fields
+    const uploadFields = ['aadhaar', 'pan', 'degree', 'drivingLicence', 'profileImage'];
+    uploadFields.forEach(field => {
+      delete filteredData[field];
+    });
+    
+    console.log("All Cookie Values (excluding upload data):", filteredData);
     clearFormCookies();
   };
 
@@ -230,6 +242,8 @@ export default function StepperForm() {
                     placeholder={field.placeholder}
                     required={field.required}
                     disabled={field.readOnly}
+                    maxLength={field.maxLength}
+                    alphaOnly={field.alphaOnly}
                   />
                 );
               case "number":
@@ -243,6 +257,7 @@ export default function StepperForm() {
                     placeholder={field.placeholder}
                     required={field.required}
                     disabled={field.readOnly}
+                    maxLength={field.maxLength}
                   />
                 );
 
@@ -302,6 +317,7 @@ export default function StepperForm() {
                     variant={field.type === "year" ? "year" : "date"}
                     required={field.required}
                     disableFuture={!isExpiryDate}
+                    maxLength={field.maxLength}
                   />
                 );
               //   case "checkbox":

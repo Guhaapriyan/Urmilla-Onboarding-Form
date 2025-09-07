@@ -22,11 +22,15 @@ export const employeePersonalInformationSchema = yup.object({
     .number()
     .typeError("Weight must be a number")
     .positive("Weight must be positive")
+    .min(20, "Weight must be at least 20 kg")
+    .max(300, "Weight must be less than 300 kg")
     .required("Weight is required"),
   height: yup
     .number()
     .typeError("Height must be a number")
     .positive("Height must be positive")
+    .min(100, "Height must be at least 100 cm")
+    .max(250, "Height must be less than 250 cm")
     .required("Height is required"),
   physicallyChallenged: yup.string().required("This field is required"),
 });
@@ -34,15 +38,9 @@ export const createChildSchema = (isRequired: boolean = false) => yup.object({
     relationship: isRequired ? yup.string().required("Relationship is required"): yup.string().optional(),
     name: isRequired ? nameValidation: yup.string().optional(),
     age: isRequired 
-        ? yup.number()
-            .typeError("Age must be a number")
-            .positive("Age must be positive")
-            .required("Age is required")
-        : yup.number()
-            .typeError("Age must be a number")
-            .positive("Age must be positive")
-            .optional(),
-    mobile: yup.string().optional().matches(/^[6-9]\d{9}$/, 'Enter valid 10-digit mobile number'),
+        ? ageValidation
+        : ageValidation.optional(),
+    mobile: phoneValidation,
 });
 
 // Default child schema (optional)
@@ -64,7 +62,7 @@ const familyBackgroundSchema = yup.object({
     }),
     spousesAge: yup.number().when("maritalStatus", (maritalStatus: any, schema) => {
         return maritalStatus === "Married"
-            ? schema.typeError("Spouse's Age must be a number").required("Spouse's Age is required")
+            ? ageValidation.label("Spouse's Age")
             : schema.notRequired();
     }),
     spousesOccupation: yup.string().when("maritalStatus", (maritalStatus: any, schema) => {
@@ -74,7 +72,7 @@ const familyBackgroundSchema = yup.object({
     }),
     spousesMobile: yup.string().when("maritalStatus", (maritalStatus: any, schema) => {
         return maritalStatus === "Married"
-            ? schema.required("Spouse's Mobile Number is required")
+            ? phoneValidation.required("Spouse's Mobile Number is required")
             : schema.notRequired();
     }),
 });
@@ -83,41 +81,20 @@ export { familyBackgroundSchema };
 
 export const employeeFamilyDetailsSchema = yup.object({
     fathersName: yup.string().required("Father's Name is required"),
-    fathersAge: yup
-        .number()
-        .typeError("Father's Age must be a number")
-        .positive("Father's Age must be positive")
-        .required("Father's Age is required"),
-    fathersMobile: yup
-        .string()
-        .matches(/^[0-9]{10}$/, "Enter a valid 10-digit phone number")
-        .required("Father's Mobile Number is required"),
+    fathersAge: ageValidation.label("Father's Age"),
+    fathersMobile: phoneValidation,
     fathersOccupation: yup.string().required("Father's Occupation is required"),
     mothersName: yup.string().required("Mother's Name is required"),
-    mothersAge: yup
-        .number()
-        .typeError("Mother's Age must be a number")
-        .positive("Mother's Age must be positive")
-        .required("Mother's Age is required"),
-    mothersMobile: yup
-        .string()
-        .matches(/^[0-9]{10}$/, "Enter a valid 10-digit phone number")
-        .required("Mother's Mobile Number is required"),
+    mothersAge: ageValidation.label("Mother's Age"),
+    mothersMobile: phoneValidation,
     mothersOccupation: yup.string().required("Mother's Occupation is required"),
 });
 
 export const employeeProfessionalDetailsSchema = yup.object({
   relationship: yup.string().required("Relationship is required"),
   name: nameValidation,
-  age: yup
-    .number()
-    .typeError("Age must be a number")
-    .positive("Age must be positive")
-    .required("Age is required"),
-  mobile: yup
-    .string()
-    .optional()
-    .matches(/^[6-9]\d{9}$/, "Enter valid 10-digit mobile number"),
+  age: ageValidation,
+  mobile:phoneValidation,
 });
 
 export const contactDetailsSchema = yup.object({
@@ -125,11 +102,7 @@ export const contactDetailsSchema = yup.object({
 
   mobileNumber: mobileValidation,
 
-  alternateMobileNumber: yup
-    .string()
-    .nullable()
-    .matches(/^[0-9]{10}$/, "Enter a valid 10-digit phone number")
-    .notRequired(),
+  alternateMobileNumber: phoneValidation.nullable().notRequired(),
 
   email: emailValidation,
 
