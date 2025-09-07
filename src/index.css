@@ -57,7 +57,7 @@ a:hover {
 }
 .ant-input-number-input {
   height: 48px !important;
-  border-width: 3px !important; /* bold border */
+  border-width: 2px !important; /* bold border */
   border-color: grey !important;
   border-radius: 4px !important; /* consistent border radius */
   box-shadow: none !important;

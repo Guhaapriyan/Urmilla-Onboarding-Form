@@ -107,7 +107,7 @@ export const FormInput = <T extends FieldValues>({
                 maxLength={maxLength}
                 className={clsx(
                   "w-full transition-all duration-200 h-12",
-                  "hover:border-[#313475] focus:border-[#313475]",
+                  "!hover:border-[#313475] focus:!border-[#313475]",
                   error && "border-red-500 focus:border-red-500"
                 )}
                 style={{
@@ -198,7 +198,7 @@ export const MobileNumberInput = <T extends FieldValues>({
             </label>
 
             <div
-              className={`h-12 flex rounded-md border-[#c5c5c5] hover:border-[#313475] focus:border-[#313475] border-2 transition-all duration-200 ${
+              className={`h-12 flex rounded-md bg-white border-[#c5c5c5] hover:border-[#313475] focus:border-[#313475] border-2 transition-all duration-200 ${
                 error &&
                 "border-red-400 focus-within:border-red-500 hover:border-red-400 "
               }`}
@@ -206,7 +206,7 @@ export const MobileNumberInput = <T extends FieldValues>({
             >
               <div
                 className={clsx(
-                  "flex items-center px-3 bg-gray-50 border-r border-gray-300 rounded-l-lg",
+                  "flex items-center px-3 border-r border-gray-300 rounded-l-lg",
                   size === "small" && "py-2",
                   size === "large" && "py-3",
                   size === "medium" && "py-2.5"

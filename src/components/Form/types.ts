@@ -30,7 +30,7 @@ export interface FormInputProps<T extends FieldValues> extends BaseFormFieldProp
 
 // Dropdown/Select props
 export interface FormDropdownProps<T extends FieldValues> extends BaseFormFieldProps<T> {
-  options: DropdownOption[];
+  options: DropdownOption[] | [];
   multiple?: boolean;
   searchable?: boolean;
   clearable?: boolean;
@@ -57,6 +57,7 @@ export interface FormDatePickerProps<T extends FieldValues> extends BaseFormFiel
   disableFuture?: boolean;
   showTime?: boolean;
   use12Hours?: boolean;
+  maxLength?: number;
 }
 
 // File upload props

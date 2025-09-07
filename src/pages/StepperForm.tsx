@@ -8,6 +8,7 @@ import InlineEducationForm from "../components/InlineEducationForm";
 import FormDropdown from "../components/Form/DropDown";
 import FormDatePicker from "../components/Form/DatePicker";
 import { CountryStateCity } from "../components/Form/CountryStateCity";
+import FormToggle from "../components/Form/FormToggle";
 import * as yup from "yup";
 import { 
   employeePersonalInformationSchema,
@@ -32,6 +33,9 @@ import {
   clearFormCookies
 } from "../lib/cookieUtils";
 import FileUploadField from "../components/Form/FileUpload";
+import { PlusOutlined } from "@ant-design/icons";
+import { JobExperienceForm } from "../components/JobExperienceForm";
+import { JobReferenceForm } from "../components/JobReferenceFrom";
 
 const createCombinedSchema = (isChildrenFormVisible: boolean = false) => {
   const baseSchema = employeePersonalInformationSchema
@@ -65,6 +69,11 @@ export default function StepperForm() {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [children, setChildren] = useState<any[]>(initialFormData?.children || []);
   const [isChildrenFormVisible, setIsChildrenFormVisible] = useState(false);
+  const [experiences, setExperiences] = useState<any[]>(initialFormData?.experiences || []);
+  const [isExperienceFormVisible, setIsExperienceFormVisible] = useState(false);
+
+  const [references, setReferences] = useState<any[]>(initialFormData?.references || []);
+  const [isReferenceFormVisible, setIsReferenceFormVisible] = useState(false);
 
   const methods = useForm({
     resolver: yupResolver(createCombinedSchema(isChildrenFormVisible)),
@@ -207,6 +216,32 @@ export default function StepperForm() {
     setIsChildrenFormVisible(false);
   };
 
+    const handleExperiencesChange = (newExperiences: any[]) => {
+    setExperiences(newExperiences);
+    methods.setValue("experiences", newExperiences);
+  };
+
+  const handleAddExperienceClick = () => {
+    setIsExperienceFormVisible(true);
+  };
+
+  const handleCloseExperienceForm = () => {
+    setIsExperienceFormVisible(false);
+  };
+
+  const handleReferencesChange = (newReferences: any[]) => {
+    setReferences(newReferences);
+    methods.setValue("references", newReferences);
+  };
+
+  const handleAddReferenceClick = () => {
+    setIsReferenceFormVisible(true);
+  };
+
+  const handleCloseReferenceForm = () => {
+    setIsReferenceFormVisible(false);
+  };
+
     const { control, handleSubmit, trigger } = methods;
     const maritalStatus = useWatch({
         control,
@@ -230,173 +265,174 @@ export default function StepperForm() {
 
         {/* Current Step Fields */}
         <div className="bg-gray-50 border border-gray-300 rounded-lg shadow-sm mx-5 lg:mx-20 p-6 dark:bg-black dark:border-gray-700">
+          {
+              currentStep === steppers.findIndex(s => s.stepName === "Job Experience Details") && (
+                <h1 className="text-xl font-bold text-[#313475] mb-4">Work Experience</h1>
+              )
+          }
           <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
-          {steppers[currentStep]?.fields?.map((field) => {
-            // Disable permanentAddress input when sameAsCurrentAddress is checked
-              const sameAs = methods.watch("sameAsCurrentAddress");
-              if (
-                field.name.startsWith("spouses") &&
-                  maritalStatus !== "married"
-              ) {
-                  return null;
-              }
-              switch (field.type) {
-              case "text":
-              case "email":
-                return (
-                  (() => {
-                    const sameAs = methods.watch("sameAsCurrentAddress");
-                    const isCurrentAddr = field.name === 'currentAddress';
-                    const labelNode = isCurrentAddr ? (
-                      <div className="flex items-center justify-between">
-                        <span>{field.label}</span>
-                        <label className="flex items-center gap-2 text-sm font-normal">
-                          <input
-                            type="checkbox"
-                            checked={!!sameAs}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
-                              methods.setValue('sameAsCurrentAddress', checked);
-                              if (checked) {
-                                const current = methods.getValues('currentAddress');
-                                methods.setValue('permanentAddress', current, { shouldValidate: true });
-                              }
-                            }}
-                          />
-                          <span>Save as Permanent</span>
-                        </label>
-                      </div>
-                    ) : field.label;
+            {(steppers[currentStep]?.fields?.map((field) => {
+                  // Disable permanentAddress input when sameAsCurrentAddress is checked
+                  const sameAs = methods.watch("sameAsCurrentAddress");
+                  if (
+                    field.name.startsWith("spouses") &&
+                    maritalStatus !== "married"
+                  ) {
+                    return null;
+                  }
+                  switch (field.type) {
+                    case "text":
+                    case "email":
+                      const isCurrentAddr = field.name === 'currentAddress';
+                      const labelNode = isCurrentAddr ? (
+                        <div className="flex items-center justify-between">
+                          <span>{field.label}</span>
+                          <label className="flex items-center gap-2 text-sm font-normal">
+                            <input
+                              type="checkbox"
+                              checked={!!sameAs}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                methods.setValue('sameAsCurrentAddress', checked);
+                                if (checked) {
+                                  const current = methods.getValues('currentAddress');
+                                  methods.setValue('permanentAddress', current, { shouldValidate: true });
+                                }
+                              }}
+                            />
+                            <span>Save as Permanent</span>
+                          </label>
+                        </div>
+                      ) : field.label;
 
-                    return (
-                      <FormInput<any>
-                        key={field.name}
-                        name={field.name}
-                        control={methods.control}
-                        type={field.type}
-                        label={labelNode as any}
-                        placeholder={field.placeholder}
-                        required={field.required}
-                        disabled={field.readOnly || (field.name === 'permanentAddress' && sameAs)}
-                        maxLength={field.maxLength}
-                        alphaOnly={field.alphaOnly}
-                        multiline={field.multiline}
-                        rows={field.rows}
-                      />
-                    );
-                  })()
-                );
-              case "number":
-                return (
-                  <FormInput<any>
-                    key={field.name}
-                    name={field.name}
-                    control={methods.control}
-                    type={field.type}
-                    label={field.label}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    disabled={field.readOnly || (field.name === 'permanentAddress' && sameAs)}
-                    maxLength={field.maxLength}
-                    />
-                  );
-                  
-              case "tel":
-                return (
-                  <MobileNumberInput<any>
-                    key={field.name}
-                    name={field.name}
-                    control={methods.control}
-                    label={field.label}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    disabled={field.readOnly}
-                  />
-                );
-              case "select":
-                if (field.name === "country" || field.name === "state" || field.name === "city") {
-                  return null;
-                }
-                return (
-                  <FormDropdown<any>
-                    key={field.name}
-                    name={field.name}
-                    control={methods.control}
-                    label={field.label}
-                    placeholder={field.placeholder}
-                    options={field.options || []}
-                    required={field.required}
-                  />
-                );
-              case "country-state-city":
-                return (
-                  <CountryStateCity
-                    key="country-state-city"
-                    control={methods.control}
-                    countryValue={countryValue}
-                    stateValue={stateValue}
-                    cityValue={cityValue}
-                    onCountryChange={setCountryValue}
-                    onStateChange={setStateValue}
-                    onCityChange={setCityValue}
-                    />
-                  );
-                  case "checkbox":
-                    // Skip rendering the standalone checkbox for sameAsCurrentAddress,
-                    // since we render it inline with the Current Address label above
-                    if (field.name === 'sameAsCurrentAddress') {
+                      return (
+                        <FormInput<any>
+                          key={field.name}
+                          name={field.name}
+                          control={methods.control}
+                          type={field.type}
+                          label={labelNode as any}
+                          placeholder={field.placeholder}
+                          required={field.required}
+                          disabled={field.readOnly || (field.name === 'permanentAddress' && sameAs)}
+                          maxLength={field.maxLength}
+                          alphaOnly={field.alphaOnly}
+                          multiline={field.multiline}
+                          rows={field.rows}
+                        />
+                      );
+                    case "number":
+                      return (
+                        <FormInput<any>
+                          key={field.name}
+                          name={field.name}
+                          control={methods.control}
+                          type={field.type}
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          required={field.required}
+                          disabled={field.readOnly || (field.name === 'permanentAddress' && sameAs)}
+                          maxLength={field.maxLength}
+                        />
+                      );
+                    case "tel":
+                      return (
+                        <MobileNumberInput<any>
+                          key={field.name}
+                          name={field.name}
+                          control={methods.control}
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          required={field.required}
+                          disabled={field.readOnly}
+                        />
+                      );
+                    case "select":
+                      if (field.name === "country" || field.name === "state" || field.name === "city") {
+                        return null;
+                      }
+                      return (
+                        <FormDropdown<any>
+                          key={field.name}
+                          name={field.name}
+                          control={methods.control}
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          options={field.options || []}
+                          required={field.required}
+                        />
+                      );
+                    case "country-state-city":
+                      return (
+                        <CountryStateCity
+                          key="country-state-city"
+                          control={methods.control}
+                          countryValue={countryValue}
+                          stateValue={stateValue}
+                          cityValue={cityValue}
+                          onCountryChange={setCountryValue}
+                          onStateChange={setStateValue}
+                          onCityChange={setCityValue}
+                        />
+                      );
+                    case "checkbox":
+                      // Skip rendering the standalone checkbox for sameAsCurrentAddress,
+                      // since we render it inline with the Current Address label above
+                      if (field.name === 'sameAsCurrentAddress') {
+                        return null;
+                      }
+                      return (
+                        <label key={field.name} className="flex items-center gap-2 text-sm sm:text-base">
+                          <input type="checkbox" {...methods.register(field.name)} />
+                          {field.label}
+                        </label>
+                      );
+                    case "date":
+                    case "year":
+                      // Allow future dates for expiry date fields
+                      const isExpiryDate = field.name.toLowerCase().includes('exp') || 
+                        field.name.toLowerCase().includes('expiry') ||
+                        field.name.toLowerCase().includes('expdate');
+                      return (
+                        <FormDatePicker<any>
+                          key={field.name}
+                          name={field.name}
+                          control={methods.control}
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          variant={field.type === "year" ? "year" : "date"}
+                          required={field.required}
+                          disableFuture={!isExpiryDate}
+                        />
+                      );
+                    case "file":
+                      return (
+                        <FileUploadField
+                          key={field.name}
+                          name={field.name}
+                          label={field.label}
+                          note={field.note}
+                          control={methods.control}
+                          accept={field.accept}
+                          required={field.required}
+                        />
+                      );
+                    case "toggle":
+                      return (
+                        <FormToggle<any>
+                          name={field.name}
+                          control={control}
+                          label={field.label}
+                          checkedChildren="Yes"
+                          unCheckedChildren="No"
+                        />
+                      );
+                    default:
                       return null;
-                    }
-                    return (
-                      <label key={field.name} className="flex items-center gap-2 text-sm sm:text-base">
-                    <input type="checkbox" {...methods.register(field.name)} />
-                    {field.label}
-                  </label>
-                );
-                case "date":
-                  case "year":
-                // Allow future dates for expiry date fields
-                const isExpiryDate = field.name.toLowerCase().includes('exp') || 
-                                   field.name.toLowerCase().includes('expiry') ||
-                                   field.name.toLowerCase().includes('expdate');
-                return (
-                  <FormDatePicker<any>
-                    key={field.name}
-                    name={field.name}
-                    control={methods.control}
-                    label={field.label}
-                    placeholder={field.placeholder}
-                    variant={field.type === "year" ? "year" : "date"}
-                    required={field.required}
-                    disableFuture={!isExpiryDate}
-                  />
-                );
-              //   case "checkbox":
-              //     return (
-              //       <label
-              //         key={field.name}
-              //         className="flex items-center gap-2 text-sm sm:text-base"
-              //       >
-              //         <input type="checkbox" {...methods.register(field?.name)} />
-              //         {field.label}
-              //       </label>
-              //     );
-                case "file":
-                  return (
-                    <FileUploadField
-                      key={field.name}
-                      name={field.name}
-                      label={field.label}
-                      note={field.note}
-                      control={methods.control}
-                      accept={field.accept}
-                      required={field.required}
-                    />
-                  );
-              default:
-                return null;
+                  }
+                })
+              )
             }
-          })}
           </div>
         </div>
 
@@ -413,7 +449,70 @@ export default function StepperForm() {
         
         {/* Inline Education Form - appears on Education Details step */}
         {currentStep === steppers.findIndex(s => s.stepName === "Education Details") && (
-          <InlineEducationForm control={control} />
+            <InlineEducationForm control={control} />
+        )}
+
+        {currentStep === steppers.findIndex(s => s.stepName === "Job Experience Details") && (
+          <>
+            <JobExperienceForm
+              control={control}
+              experiences={experiences}
+              onExperiencesChange={handleExperiencesChange}
+              isVisible={true}
+              onClose={handleCloseExperienceForm}
+            />
+             {/* Render fields2 if present */}
+            <div className="bg-gray-50 border border-gray-300 rounded-lg shadow-sm mx-5 lg:mx-20 p-6 dark:bg-black dark:border-gray-700 mt-4">
+              {
+              currentStep === steppers.findIndex(s => s.stepName === "Job Experience Details") && (
+                <h1 className="text-xl font-bold text-[#313475] mb-4">Work Reference</h1>
+              )
+          }
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
+            {(steppers[currentStep]?.fields2?.map((field) => {
+              switch (field.type) {
+                case "text":
+                case "email":
+                  return (
+                    <FormInput<any>
+                      key={field.name}
+                      name={field.name}
+                      control={methods.control}
+                      type={field.type}
+                      label={field.label}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      maxLength={field.maxLength}
+                      alphaOnly={field.alphaOnly}
+                    />
+                  );
+                case "tel":
+                  return (
+                    <MobileNumberInput<any>
+                      key={field.name}
+                      name={field.name}
+                      control={methods.control}
+                      label={field.label}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                    />
+                  );
+                // Add other field types as needed
+                default:
+                  return null;
+              }
+            }))
+            }
+          </div>
+        </div>
+            <JobReferenceForm
+              control={control}
+              references={references}
+              onReferencesChange={handleReferencesChange}
+              isVisible={true}
+              onClose={handleCloseReferenceForm}
+            />
+          </>
         )}
 
         {/* Step Navigation Buttons - Fixed at bottom */}
@@ -442,7 +541,7 @@ export default function StepperForm() {
             
             <div className="flex-1 flex justify-end">
               {currentStep < steppers.length - 1 && (
-                <Button type="primary" onClick={() => nextStep()}>
+                <Button type="primary" onClick={() => nextStep()} size="sm">
                   Next
                   <span className="ml-1">&gt;</span>
                 </Button>
@@ -454,6 +553,19 @@ export default function StepperForm() {
               )}
             </div>
           </div>
+        </div>
+        
+        {/* Step Navigation Buttons */}
+        <div className="flex justify-between mt-8 px-5 lg:px-20">
+          {maritalStatus !== "single" && currentStep === 1 && !isChildrenFormVisible && (
+            <Button
+              type = "primary"
+              size="large"
+              onClick={handleAddChildrenClick}
+            >
+              + Add Children
+            </Button>
+          )}
         </div>
         
         {/* Add bottom padding to prevent content from being hidden behind fixed buttons */}

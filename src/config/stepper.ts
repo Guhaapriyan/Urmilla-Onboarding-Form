@@ -110,12 +110,14 @@ export const steppers = [
             { name: "experienceFromDate", label: "Experience From Date", type: "date", placeholder: "Select date", required: true },
             { name: "experienceToDate", label: "Experience To Date", type: "date", placeholder: "Select previous Exp to date", required: true },
             { name: "experienceMonths", label: "Experience (Months)", type: "text", placeholder: "Auto-calculated", required: false, readOnly: true },
-            { name: "isInsideCompany", label: "Is Inside Company", type: "checkbox", required: false },
-            { name: "name", label: "Name", type: "text", placeholder: "Name", required: true, maxLength: 30, alphaOnly: true },
-            { name: "designation", label: "Designation", type: "text", placeholder: "Enter Designation", required: true, maxLength: 30, alphaOnly: true },
-            { name: "contactNumber", label: "Contact Number", type: "tel", placeholder: "Enter Contact Number", required: true },
-            { name: "referenceEmail", label: "Email", type: "email", placeholder: "Enter Email", required: true },
+            { name: "isInsideCompany", label: "Is Inside Company", type: "toggle", required: false },
         ],
+        fields2: [
+            { name: "name", label: "Name", type: "text", placeholder: "Name", maxLength: 30, alphaOnly: true },
+            { name: "designation", label: "Designation", type: "text", placeholder: "Enter Designation", maxLength: 30, alphaOnly: true },
+            { name: "contactNumber", label: "Contact Number", type: "tel", placeholder: "Enter Contact Number" },
+            { name: "referenceEmail", label: "Reference Email", type: "email", placeholder: "Enter Email" },
+        ]
     },
     {
         stepName: "Attachments",

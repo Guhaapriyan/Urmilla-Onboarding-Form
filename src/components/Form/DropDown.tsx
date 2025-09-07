@@ -56,7 +56,7 @@ export const FormDropdown = <T extends FieldValues>({
                 error && "[&_.ant-select-selector]:!border-red-500"
               )}
               style={{ fontSize: "clamp(14px, 2.5vw, 16px)" }}
-              options={options.map((opt) => ({
+              options={options?.map((opt) => ({
                 value: opt.value,
                 label: opt.label,
                 disabled: opt.disabled,
@@ -93,7 +93,7 @@ export const FormDropdown = <T extends FieldValues>({
                   .includes(input.toLowerCase())
               }
             >
-              {options.map((option) => (
+              {options?.map((option) => (
                 <Option
                   key={option.value}
                   value={option.value}
