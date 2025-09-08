@@ -356,6 +356,12 @@ export default function StepperForm() {
                   ) {
                     return null;
                   }
+                    if (
+                        (field.name === "weddingDate") &&
+                        maritalStatus === "single"
+                    ) {
+                        return null;
+                    }
                   switch (field.type) {
                     case "text":
                     case "email":

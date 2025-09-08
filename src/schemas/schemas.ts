@@ -49,7 +49,7 @@ const familyBackgroundSchema = yup.object({
     religion: yup.string().required("Religion is required"),
     nationality: yup.string().required("Nationality is required"),
     weddingDate: yup.string().when("maritalStatus", (maritalStatus: any, schema) => {
-        return maritalStatus === "married"
+        return maritalStatus === "Married"
             ? schema.required("Wedding Date is required")
             : schema.notRequired();
     }),

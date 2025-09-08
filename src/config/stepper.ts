@@ -11,7 +11,7 @@ export const steppers = [
             { name: "originalDob", label: "Original DOB", type: "date", placeholder: "Select Original DOB", required: true },
             { name: "dob", label: "DOB", type: "date", placeholder: "Select DOB", required: true },
             { name: "bloodGroup", label: "Blood Group", type: "select", placeholder: "Select Blood Group", options: bloodGroupOptions, required: true },
-            { name: "weight", label: "Weight (kg)", type: "number", placeholder: "Enter Weight (kg)", required: true, maxLength: 3 },
+            { name: "weight", label: "Weight (kg)", type: "number", placeholder: "Enter Weight (kg)", required: true, maxLength: 4 },
             { name: "height", label: "Height (cm)", type: "number", placeholder: "Enter Height (cm)", required: true, maxLength: 3 },
             { name: "physicallyChallenged", label: "Physically Challenged", type: "select", placeholder: "Select Physically Challenged", options: binaryOptions, required: true },
         ],
@@ -99,7 +99,7 @@ export const steppers = [
         fields: [
             { name: "qualification", label: "Qualification", type: "text", placeholder: "e.g., SSLC, HSC, B.E.", required: true, maxLength: 30, alphaOnly: true },
             { name: "institutionName", label: "Institution Name", type: "text", placeholder: "e.g., XYZ University", required: true, maxLength: 30 },
-            { name: "percentage", label: "Percentage", type: "number", placeholder: "Enter Percentage", required: true , maxLength: 3},
+            { name: "percentage", label: "Percentage", type: "number", placeholder: "Enter Percentage", required: true , maxLength: 4},
             { name: "yearOfPassing", label: "Year of Passing", type: "year", placeholder: "Select the Year of Passing", required: true },
         ],
     },
